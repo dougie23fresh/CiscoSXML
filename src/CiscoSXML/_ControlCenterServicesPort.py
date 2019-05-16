@@ -12,7 +12,10 @@ from zeep.exceptions import Fault
 from zeep.helpers import serialize_object
 from requests import Session
 from requests.auth import HTTPBasicAuth
-import urllib3
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
+
+disable_warnings(InsecureRequestWarning)
 
 class ControlCenterServicesPort:
     def __init__(self, username, password, hostname, tls_verify=True, timeout=10):
