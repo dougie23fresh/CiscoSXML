@@ -2,6 +2,7 @@ __author__ = 'Melvin Douglas'
 __version__ = '12'
 __email__ = 'melvin.douglas@hotmail.com'
 __status__ = 'Production'
+# https://d1nmyq4gcgsfi5.cloudfront.net/site/sxml/documents/api-reference/service-control/
 
 import os
 from zeep import Client
@@ -17,27 +18,25 @@ from urllib3.exceptions import InsecureRequestWarning
 
 disable_warnings(InsecureRequestWarning)
 
-# https://developer.cisco.com/docs/sxml/#!risport70-api-reference
 
-
-class RisPort70:
+class ControlCenterServicesExPort:
     def __init__(self, username, password, hostname, tls_verify=True, timeout=10):
         self.last_exception = None
-        wsdl = f'https://{hostname}:8443/realtimeservice2/services/RISService70?wsdl'
+        wsdl = f'https://{hostname}:8443/controlcenterservice2/services/ControlCenterServicesEx?wsdl'
         session = Session()
         session.verify = tls_verify
         session.auth = HTTPBasicAuth(username, password)
         cache = SqliteCache()
         transport = Transport(cache=cache, session=session, timeout=timeout, operation_timeout=timeout)
-        self.history = HistoryPlugin()
-        self.client = Client(wsdl=wsdl, transport=transport, plugins=[self.history])
-        binding_name = '{http://schemas.cisco.com/ast/soap}RisBinding'
-        service_addr = f'https://{hostname}:8443/realtimeservice2/services/RISService70'
+        history = HistoryPlugin()
+        self.client = Client(wsdl=wsdl, transport=transport, plugins=[history])
+        binding_name = '{http://schemas.cisco.com/ast/soap}ControlCenterServicesExBinding'
+        service_addr = f'https://{hostname}:8443/controlcenterservice2/services/ControlCenterServicesEx'
         self.service = self.client.create_service(binding_name, service_addr)
 
-    def selectCmDevice(self, data, serialize=False):
+    def getStaticServiceListExtended(self, data, serialize=False):
         try:
-            result = self.service.selectCmDevice(**data)
+            result = self.service.getStaticServiceListExtended(data)
         except Exception as fault:
             result = None
             self.last_exception = fault
@@ -45,9 +44,9 @@ class RisPort70:
             return serialize_object(result)
         return result
 
-    def selectCmDeviceExt(self, data, serialize=False):
+    def getFileDirectoryList(self, data, serialize=False):
         try:
-            result = self.service.selectCmDeviceExt(**data)
+            result = self.service.getFileDirectoryList(data)
         except Exception as fault:
             result = None
             self.last_exception = fault
@@ -55,9 +54,19 @@ class RisPort70:
             return serialize_object(result)
         return result
 
-    def selectCtiItem(self, data, serialize=False):
+    def soapDoServiceDeploymentNoDbUpdate(self, data, serialize=False):
         try:
-            result = self.service.selectCtiItem(**data)
+            result = self.service.soapDoServiceDeploymentNoDbUpdate(**data)
+        except Exception as fault:
+            result = None
+            self.last_exception = fault
+        if serialize is True:
+            return serialize_object(result)
+        return result
+
+    def soapDoControlServicesEx(self, data, serialize=False):
+        try:
+            result = self.service.soapDoControlServicesEx(**data)
         except Exception as fault:
             result = None
             self.last_exception = fault

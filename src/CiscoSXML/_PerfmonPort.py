@@ -28,39 +28,66 @@ class PerfmonPort:
         transport = Transport(cache=cache, session=session, timeout=timeout, operation_timeout=timeout)
         history = HistoryPlugin()
         self.client = Client(wsdl=wsdl, transport=transport, plugins=[history])
-    def list_services(self):
-        values = []
-        for service in self.client.wsdl.services.values():
-            print("service:", service.name)
-            for port in service.ports.values():
-                values.append(port.binding._operations.values())
-        return values
-    def _callSoap_func(self, func_name, data, serialize=False):
+
+    def PerfmonOpenSession(self):
         try:
-            result = getattr(self.client.service, func_name)(**data)
-            #result = self.service.updateAppUser(**data)
+            result = self.client.service.PerfmonOpenSession()
+            return result
         except Exception as fault:
-            result = None
             self.last_exception = fault
-        if result is not None: result = result['return']
-        if serialize is True:
-            return serialize_object(result)
-        return result
-    def perfmonOpenSession(self, data, serialize=False):
-        return self._callSoap_func('perfmonOpenSession', data, serialize)
-    def perfmonAddCounter(self, data, serialize=False):
-        return self._callSoap_func('perfmonAddCounter', data, serialize)
-    def perfmonRemoveCounter(self, data, serialize=False):
-        return self._callSoap_func('perfmonRemoveCounter', data, serialize)
-    def perfmonCollectSessionData(self, data, serialize=False):
-        return self._callSoap_func('perfmonCollectSessionData', data, serialize)
-    def perfmonCloseSession(self, data, serialize=False):
-        return self._callSoap_func('perfmonCloseSession', data, serialize)
-    def perfmonListInstance(self, data, serialize=False):
-        return self._callSoap_func('perfmonListInstance', data, serialize)
-    def perfmonQueryCounterDescription(self, data, serialize=False):
-        return self._callSoap_func('perfmonQueryCounterDescription', data, serialize)
-    def perfmonListCounter(self, data, serialize=False):
-        return self._callSoap_func('perfmonListCounter', data, serialize)
-    def perfmonCollectCounterData(self, data, serialize=False):
-        return self._callSoap_func('perfmonCollectCounterData', data, serialize)
+
+    def PerfmonAddCounter(self, data):
+        try:
+            result = self.client.service.PerfmonAddCounter(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonRemoveCounter(self, data):
+        try:
+            result = self.client.service.PerfmonRemoveCounter()
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonCollectSessionData(self, data):
+        try:
+            result = self.client.service.PerfmonCollectSessionData(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonCloseSession(self, data):
+        try:
+            result = self.client.service.PerfmonCloseSession(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonListInstance(self, data):
+        try:
+            result = self.client.service.PerfmonListInstance(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonQueryCounterDescription(self, data):
+        try:
+            result = self.client.service.PerfmonQueryCounterDescription(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonListCounter(self, data):
+        try:
+            result = self.client.service.PerfmonListCounter()
+            return result
+        except Exception as fault:
+            self.last_exception = fault
+
+    def PerfmonCollectCounterData(self):
+        try:
+            result = self.client.service.PerfmonCollectCounterData()
+            return result
+        except Exception as fault:
+            self.last_exception = fault

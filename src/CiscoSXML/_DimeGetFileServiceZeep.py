@@ -18,10 +18,10 @@ from urllib3.exceptions import InsecureRequestWarning
 disable_warnings(InsecureRequestWarning)
 
 
-class CDRonDemand:
+class DimeGetFileService:
     def __init__(self, username, password, hostname, tls_verify=True, timeout=10):
         self.last_exception = None
-        wsdl = f'https://{hostname}:8443/CDRonDemandService/services/CDRonDemand?wsdl'
+        wsdl = f'https://{hostname}:8443/logcollectionservice/services/DimeGetFileService'
         session = Session()
         session.verify = tls_verify
         session.auth = HTTPBasicAuth(username, password)
@@ -29,28 +29,13 @@ class CDRonDemand:
         transport = Transport(cache=cache, session=session, timeout=timeout, operation_timeout=timeout)
         self.history = HistoryPlugin()
         self.client = Client(wsdl=wsdl, transport=transport, plugins=[self.history])
-        binding_name = '{http://schemas.cisco.com/ast/soap/}CDRonDemandSoapBinding'
-        service_addr = f'https://{hostname}:8443/CDRonDemandService/services/CDRonDemand'
+        binding_name = '{http://cisco.com/ccm/serviceability/soap/LogCollection/GetFile/}GetFileBinding'
+        service_addr = f'https://{hostname}:8443/logcollectionservice/services/DimeGetFileService'
         self.service = self.client.create_service(binding_name, service_addr)
 
-    def list_services(self):
-        values = []
-        for service in self.client.wsdl.services.values():
-            print("service:", service.name)
-            for port in service.ports.values():
-                values.append(port.binding._operations.values())
-        return values
-
-    def get_file_list(self, data):
+    def GetOneFile(self, data):
         try:
-            result = self.service.get_file_list(**data)
-            return result
-        except Exception as fault:
-            self.last_exception = fault
-
-    def get_file(self, data):
-        try:
-            result = self.service.get_file(**data)
+            result = self.service.GetOneFile(data)
             return result
         except Exception as fault:
             self.last_exception = fault

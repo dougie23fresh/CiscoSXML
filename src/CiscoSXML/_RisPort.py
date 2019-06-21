@@ -21,48 +21,49 @@ disable_warnings(InsecureRequestWarning)
 class RisPort:
     def __init__(self, username, password, hostname, tls_verify=True, timeout=10):
         self.last_exception = None
-        wsdl = f'https://{hostname}/realtimeservice/services/RisPort?wsdl'
+        wsdl = f'https://{hostname}:8443/realtimeservice2/services/RISService?wsdl'
         session = Session()
         session.verify = tls_verify
         session.auth = HTTPBasicAuth(username, password)
         cache = SqliteCache()
-        transport = Transport(cache=cache, session=session,
-                              timeout=timeout, operation_timeout=timeout)
-        history = HistoryPlugin()
-        self.client = Client(wsdl=wsdl, transport=transport, plugins=[history])
+        transport = Transport(cache=cache, session=session, timeout=timeout, operation_timeout=timeout)
+        self.history = HistoryPlugin()
+        self.client = Client(wsdl=wsdl, transport=transport, plugins=[self.history])
+        binding_name = '{http://schemas.cisco.com/ast/soap}RisBinding'
+        service_addr = f'https://{hostname}:8443/realtimeservice2/services/RISService'
+        self.service = self.client.create_service(binding_name, service_addr)
 
-    def list_services(self):
-        values = []
-        for service in self.client.wsdl.services.values():
-            print("service:", service.name)
-            for port in service.ports.values():
-                values.append(port.binding._operations.values())
-        return values
-
-    def _callSoap_func(self, func_name, data, serialize=False):
+    def selectCmDevice(self, data):
         try:
-            result = getattr(self.client.service, func_name)(**data)
-            #result = self.service.updateAppUser(**data)
+            result = self.service.selectCmDevice(**data)
+            return result
         except Exception as fault:
-            result = None
             self.last_exception = fault
-        if result is not None:
-            result = result['return']
-        if serialize is True:
-            return serialize_object(result)
-        return result
 
-    def selectCmDevice(self, data, serialize=False):
-        return self._callSoap_func('selectCmDevice', data, serialize)
+    def SelectCmDeviceExt(self, data):
+        try:
+            result = self.service.SelectCmDeviceExt(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
 
-    def SelectCmDeviceExt(self, data, serialize=False):
-        return self._callSoap_func('SelectCmDeviceExt', data, serialize)
+    def selectCtiItem(self, data):
+        try:
+            result = self.service.selectCtiItem(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
 
-    def selectCtiItem(self, data, serialize=False):
-        return self._callSoap_func('selectCtiItem', data, serialize)
+    def getServerInfo(self, data):
+        try:
+            result = self.service.getServerInfo(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault
 
-    def getServerInfo(self, data, serialize=False):
-        return self._callSoap_func('getServerInfo', data, serialize)
-
-    def SelectCmDeviceSIP(self, data, serialize=False):
-        return self._callSoap_func('SelectCmDeviceSIP', data, serialize)
+    def SelectCmDeviceSIP(self, data):
+        try:
+            result = self.service.SelectCmDeviceSIP(**data)
+            return result
+        except Exception as fault:
+            self.last_exception = fault

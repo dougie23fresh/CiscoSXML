@@ -1,16 +1,79 @@
-# FreshSXML
-## Python Class for Cisco UC Serviceability XML API  (SXML)
+# Python Wrapper for Cisco UC Serviceability XML API (SXML)
 
-### RisPort (Real Time Information Port) SOAP Service
+This is a Python based wapper fo the Unified CM SXML API
 
-### related to real-time information
-  
-### PerfmonPort (Performance Information Port) SOAP Service
+## RisPort (Real Time Information Port) SOAP Service
 
-### ControlCenterServicesPort (All Service Control APIs) SOAP Service
+```python
+import CiscoSXML as sxml
+c = sxml.RisPort70(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+ex = {
+    'StateInfo': '',
+    'CmSelectionCriteria': {
+        'MaxReturnedDevices': '10',
+        'DeviceClass': 'Phone',
+        'Model': '255',
+        'Status': 'Any',
+        'NodeName': '',
+        'SelectBy': 'DirNumber',
+        'SelectItems': {
+            'item': [
+                '11111',
+            ]
+        },
+        'Protocol': 'Any',
+        'DownloadStatus': 'Any'
+    }
+}
+print(c.selectCmDevice(ex))
+print(c.selectCmDeviceExt(ex))
+```
 
-### LogCollectionPort (All Log Collection APIs) SOAP Service
+## PerfmonPort (Performance Information Port) SOAP Service
 
-### CDRonDemand (All CDR APIs) SOAP Service
+```python
+import CiscoSXML as sxml
+c = sxml.PerfmonPort(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+session = c.PerfmonOpenSession()
+counters = [
+    {'Name': '\\\\CUCM_PUB\\Number of Replicates Created and State of Replication(ReplicateCount)\\Replicate_State'}
+]
+result = c.PerfmonAddCounter({'SessionHandle': session, 'ArrayOfCounter': counters})
+result = c.PerfmonCollectSessionData({'SessionHandle': session})
+print(result)
+c.PerfmonCloseSession({'SessionHandle': session})
+```
 
-### DimeGetFileService (Geting Single File) SOAP Service 
+## ControlCenterServicesPort (All Service Control APIs) SOAP Service
+
+```python
+import CiscoSXML as sxml
+c = sxml.ControlCenterServicesExPort(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+print(c.list_services())
+print(c.getStaticServiceListExtended(''))
+```
+
+## LogCollectionPort (All Log Collection APIs) SOAP Service
+
+```python
+import CiscoSXML as sxml
+c = sxml.LogCollectionPort(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+print(c.ListNodeServiceLogs())
+```
+
+## CDRonDemand (All CDR APIs) SOAP Service
+
+```python
+import CiscoSXML as sxml
+c = sxml.CDRonDemand(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+ex = {'in0':'201906051000', 'in1':'201906051200','in2': True}
+print(c.get_file_list(ex))
+```
+
+## DimeGetFileService (Geting Single File) SOAP Service
+
+```python
+import CiscoSXML as sxml
+c = sxml.DimeGetFileService(USERNAME, PASSWORD, HOSTNAME, tls_verify=False)
+print(c.GetOneFile('/var/log/active/tomcat/logs/catalina.out-20190605').attachments[0].content)
+```
